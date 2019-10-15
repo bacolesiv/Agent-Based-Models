@@ -77,60 +77,46 @@ neg <- matrix(0, 38, 38)
 
 for (i in 1:38) {
   for (j in 1:38) {
-    pos[i,j] <- rbinom(1, 1, .2)
+    pos[i,j] <- rbinom(1, 1, .08)
   }
 }
 
 for (i in 1:38) {
   for (j in 1:38) {
-    neg[i,j] <- rbinom(1, 1, .2)*-1
+    neg[i,j] <- rbinom(1, 1, .02)*-1
   }
 }
 
-network <- pos + neg
+#Imposing Symetry
+p <- t(pos)
+pos <- pos + p
+
+n <- t(neg)
+neg <- neg + n
+  
+#The friendship Network (Square & Symetric MAtrix)
+network <- pos + neg 
 diag(network) = 0 
-network
-
-#Structural Balance Formula (DOESNT WORK YET)
-structural.balance <- function(g) {
-
-  triples <- combn(1:vcount(g)-1, 3)
-  good <- bad <- 0
-  for (t in 1:ncol(triples)) {
-    
-    tri <- triples[,t]
-    edges <- E(g) [ tri %--% tri ]
-    if (length(unique(get.edges(g, edges))) < 3) { next }
-    if (prod(E(g)[edges]$sign) > 0) {
-      good <- good +1
-    } else {
-      bad <- bad +1
-    }
-  }
-  c(good, bad)
-}
 
 #Making a Signed Graph Object 
-graph <- graph_from_adjacency_matrix(network, mode = "directed", weighted = NULL, diag = F)
-plot(graph)
+graph <- graph_from_adjacency_matrix(network, mode = "directed", weighted = T)
 
-#Assessing Ego Balance
-net2 <- network %*% network
-diag(net2)
+#Color Coding the Network Ties 
+E(graph)$color <- if_else( E(graph)$weight > 0, "green3", "red3")
+V(graph)$label <- NA
+V(graph)$size <- igraph::degree(graph, v = V(graph), mode = "in")*2
+#Initial Graph 
+plot(graph, layout=layout_with_fr)
 
-t2.2 <- t2%*% t2
-diag(t2.2)
-
-#Adding and Removing Ties 
-for (i in 1:38) {
-  for (j in 1:38) {
-    if_else()
-  }
-}
 ```
 
+#try to recode from the SAS code and produce some figures for a final paper (COmpare Fake data net with T4 Figure)
 
+#Mix would be to identify the number of balanced verse unbalanced triads and then compare those 3 members 
 
+```{r}
+
+```
 
 
 
